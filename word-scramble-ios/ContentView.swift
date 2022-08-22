@@ -34,6 +34,8 @@ struct ContentView: View {
                 .onSubmit {
                 addNewWord()
             }
+                .onAppear(perform: startGame)
+
             }
     }
     
@@ -41,12 +43,25 @@ struct ContentView: View {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         guard answer .count > 0 else {return}
         
-        //extra validation to come
         withAnimation {
             usedWords.insert(answer, at:0)
         }
        
         newWord = ""
+    }
+    
+    func startGame() {
+
+        if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
+            
+            if let startWords = try? String(contentsOf: startWordsURL) {
+                let allWords = startWords.components(separatedBy: "\n")
+                rootWord = allWords.randomElement() ?? "silkworm"
+                return
+            }
+        }
+
+        fatalError("Could not load start.txt from bundle.")
     }
 
 }
